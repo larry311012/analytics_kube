@@ -23,7 +23,7 @@ dag = DAG(
 
 t1 = BashOperator(
     task_id='run_schedule_py',
-    bash_command='python3 $AIRFLOW_HOME/dags/schedule.py',
+    bash_command='python3 /opt/dags/schedule.py',
     env={'AIRLABS_API_KEY': '{{ var.value.AIRLABS_API_KEY }}'},  # Example of using Airflow Variables
     dag=dag,
 )
