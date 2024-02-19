@@ -1,5 +1,5 @@
 from airflow import DAG
-from airflow.operators.python_operator import PythonOperator
+from airflow.operators.python import PythonOperator  # Updated import for Airflow 2.x
 from datetime import datetime, timedelta
 import pandas as pd
 import requests
@@ -12,7 +12,7 @@ default_args = {
     'owner': 'airflow',
     'depends_on_past': False,
     'start_date': datetime(2024, 2, 19),
-    'email': ['your_email@example.com'],
+    'email': ['your_email@example.com'],  # Ensure this is set to a valid email address if you want to receive notifications
     'email_on_failure': False,
     'email_on_retry': False,
     'retries': 1,
@@ -24,14 +24,13 @@ dag = DAG(
     default_args=default_args,
     description='A simple DAG to run schedule.py with environment variables',
     schedule_interval=timedelta(minutes=3),
-    catchup=False,
+    catchup=False,  # Prevents backfilling
 )
 
 def extract_and_save_to_s3(**kwargs):
-    # Extract part
     api_key = os.getenv("AIRLABS_API_KEY")
     if not api_key:
-        print("API key not found. Set the AIRLABS_API_KEY environment variable.")
+        print("API key not found. Set the AIRLABS_API_KEY environment variable.", file=sys.stderr)
         sys.exit(1)
 
     fields = "&_fields=flight_iata,dep_iata,dep_time_utc,arr_iata,arr_time_utc,status,duration,delayed,dep_delayed,arr_delayed"
@@ -39,22 +38,25 @@ def extract_and_save_to_s3(**kwargs):
     print("Extracting...")
     try:
         response = requests.get(f"{schedules_api}{fields}", params={'api_key': api_key})
-        response.raise_for_status()  # This will raise an exception for HTTP error codes
+        response.raise_for_status()  # Raises an exception for HTTP errors
         schedule_data = pd.json_normalize(response.json(), record_path=['response'])
     except requests.exceptions.RequestException as e:
         print(f"Request failed: {e}", file=sys.stderr)
         sys.exit(1)
 
-    # Save to S3 part
     bucket_name = 'analytics-kube'
     object_name = 'schedule.csv'
     
     csv_buffer = StringIO()
     schedule_data.to_csv(csv_buffer, index=False)
-    
-    s3_client = boto3.client('s3')
-    s3_client.put_object(Bucket=bucket_name, Key=object_name, Body=csv_buffer.getvalue())
-    print(f"Data uploaded to s3://{bucket_name}/{object_name}")
+
+    try:
+        s3_client = boto3.client('s3')
+        s3_client.put_object(Bucket=bucket_name, Key=object_name, Body=csv_buffer.getvalue())
+        print(f"Data uploaded to s3://{bucket_name}/{object_name}")
+    except Exception as e:
+        print(f"Failed to upload data to S3: {e}", file=sys.stderr)
+        sys.exit(1)
 
 run_etl = PythonOperator(
     task_id='extract_and_save_to_s3',
