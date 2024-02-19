@@ -14,7 +14,7 @@ default_args = {
 }
 
 dag = DAG(
-    'air_DAG',
+    dag_id='schedule_DAG',
     default_args=default_args,
     description='A simple DAG to run schedule.py with environment variables',
     schedule_interval=timedelta(minutes=3),
