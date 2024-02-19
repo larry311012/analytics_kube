@@ -21,7 +21,6 @@ def extract(api_key):
 def save_to_s3(data, bucket_name, object_name):
     """
     Save the DataFrame to a CSV file and upload it to S3.
-
     :param data: DataFrame to save.
     :param bucket_name: S3 bucket name.
     :param object_name: S3 object name. Include the file name to save as in the bucket.
