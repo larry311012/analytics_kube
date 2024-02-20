@@ -69,5 +69,5 @@ def my_callable(*args, **kwargs):
 with DAG('my_dag', default_args=default_args, start_date=datetime(2021, 1, 1)) as dag:
     python_task = PythonOperator(
         task_id='my_python_task',
-        python_callable=my_callable
+        python_callable=main
     )
