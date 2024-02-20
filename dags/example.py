@@ -38,7 +38,20 @@ def save_to_s3(data, bucket_name, object_name):
     # Upload CSV to S3
     s3_client.put_object(Bucket=bucket_name, Key=object_name, Body=csv_buffer.getvalue())
     print(f"Data uploaded to s3://{bucket_name}/{object_name}")
-    
+
+def main():
+    api_key = os.getenv("AIRLABS_API_KEY")
+    if not api_key:
+        print("API key not found. Set the AIRLABS_API_KEY environment variable.")
+        sys.exit(1)
+
+    # Define your S3 bucket and object name
+    bucket_name = 'analytics-kube'
+    object_name = 'schedule.csv'
+
+    data = extract(api_key)
+    save_to_s3(data, bucket_name, object_name)
+
 default_args = {
     'owner': 'airflow',
     'depends_on_past': False,
