@@ -3,7 +3,7 @@ import requests
 import os
 import sys
 import boto3
-from io import StringIO  # For string IO
+from io import StringIO 
 
 def extract(api_key):
     fields = "&_fields=flight_iata,dep_iata,dep_time_utc,arr_iata,arr_time_utc,status,duration,delayed,dep_delayed,arr_delayed"

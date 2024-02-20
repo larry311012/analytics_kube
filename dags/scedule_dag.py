@@ -1,5 +1,5 @@
 from airflow import DAG
-from airflow.operators.python import PythonOperator  # Updated import for Airflow 2.x
+from airflow.operators.python import PythonOperator  
 from datetime import datetime, timedelta
 import pandas as pd
 import requests
@@ -12,7 +12,7 @@ default_args = {
     'owner': 'airflow',
     'depends_on_past': False,
     'start_date': datetime(2024, 2, 19),
-    'email': ['your_email@example.com'],  # Ensure this is set to a valid email address if you want to receive notifications
+    'email': ['your_email@example.com'], 
     'email_on_failure': False,
     'email_on_retry': False,
     'retries': 1,
@@ -30,7 +30,7 @@ def extract_and_save_to_s3(**kwargs):
     print("Extracting...")
     try:
         response = requests.get(f"{schedules_api}{fields}", params={'api_key': api_key})
-        response.raise_for_status()  # Raises an exception for HTTP errors
+        response.raise_for_status() 
         schedule_data = pd.json_normalize(response.json(), record_path=['response'])
     except requests.exceptions.RequestException as e:
         print(f"Request failed: {e}", file=sys.stderr)
