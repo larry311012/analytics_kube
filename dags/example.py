@@ -36,7 +36,7 @@ def save_to_s3(data, bucket_name, object_name):
     print(f"Data uploaded to s3://{bucket_name}/{object_name}")
 
 def main():
-    api_key = 'e8ce3545f1d8bd4193c910036ac1c3b1'
+    api_key = '831739b7-722e-4af1-96db-8242aedc783f'
     if not api_key:
         print("API key not found. Set the AIRLABS_API_KEY environment variable.")
         sys.exit(1)
