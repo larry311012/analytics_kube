@@ -10,16 +10,12 @@ from io import StringIO
 
 def extract(api_key):
     fields = "&_fields=flight_iata,dep_iata,dep_time_utc,arr_iata,arr_time_utc,status,duration,delayed,dep_delayed,arr_delayed"
+    method = 'ping'
+    params = {'api_key': api_key}
     schedules_api = 'https://airlabs.co/api/v9/schedules?airline_iata=FR'
     print("Extracting...")
-    try:
-        response = requests.get(f"{schedules_api}{fields}", params={'api_key': api_key})
-        response.raise_for_status()  # This will raise an exception for HTTP error codes
-        schedule_data = pd.json_normalize(response.json(), record_path=['response'])
-        return schedule_data
-    except requests.exceptions.RequestException as e:
-        print(f"Request failed: {e}", file=sys.stderr)
-        sys.exit(1)
+    schedule_data = pd.json_normalize(requests.get(schedules_api+fields+method, params).json(), record_path=['response'])
+    return schedule_data 
 
 def save_to_s3(data, bucket_name, object_name):
     """
