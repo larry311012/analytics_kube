@@ -29,7 +29,8 @@ def save_to_s3(data, bucket_name, object_name):
     data.to_csv(csv_buffer, index=False)
 
     # Create S3 client
-    s3_client = boto3.client('s3')
+    s3_hook = S3Hook(aws_conn_id='aws_default')
+    s3_client = s3_hook.get_conn()
 
     # Upload CSV to S3
     s3_client.put_object(Bucket=bucket_name, Key=object_name, Body=csv_buffer.getvalue())
