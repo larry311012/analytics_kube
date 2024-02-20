@@ -50,7 +50,7 @@ def extract_and_save_to_s3(**kwargs):
         print(f"Failed to upload data to S3: {e}", file=sys.stderr)
         sys.exit(1)
 
-with DAG(dag_id='air_dag', default_args=default_args, description='A simple DAG to run schedule.py with environment variables', schedule_interval=timedelta(minutes=3), catchup=False) as dag:
+with DAG(dag_id='air_dag', default_args=default_args, description='A simple DAG to run schedule.py with environment variables', schedule_interval=timedelta(minutes=15), catchup=False) as dag:
     run_etl = PythonOperator(
         task_id='extract_and_save_to_s3',
         python_callable=extract_and_save_to_s3,

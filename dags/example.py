@@ -50,6 +50,8 @@ def main():
     data = extract(api_key)
     save_to_s3(data, bucket_name, object_name)
 
+    print("Data Uploaded to S3")
+
 default_args = {
     'owner': 'airflow',
     'depends_on_past': False,
@@ -60,9 +62,6 @@ default_args = {
     'retries': 1,
     'retry_delay': timedelta(minutes=1),
 }
-
-# def my_callable(*args, **kwargs):
-#     print("Hello from PythonOperator")
 
 with DAG('my_dag', default_args=default_args, start_date=datetime(2021, 1, 1)) as dag:
     python_task = PythonOperator(
