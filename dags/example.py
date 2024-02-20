@@ -59,11 +59,11 @@ default_args = {
     'retry_delay': timedelta(minutes=1),
 }
 
-def my_callable(*args, **kwargs):
-    print("Hello from PythonOperator")
+# def my_callable(*args, **kwargs):
+#     print("Hello from PythonOperator")
 
 with DAG('my_dag', default_args=default_args, start_date=datetime(2021, 1, 1)) as dag:
     python_task = PythonOperator(
-        task_id='my_python_task',
-        python_callable=main
+        task_id ='my_python_task',
+        python_callable = main
     )
