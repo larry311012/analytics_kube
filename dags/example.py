@@ -19,23 +19,25 @@ def extract(api_key):
     return schedule_data 
 
 def save_to_s3(data, bucket_name, object_name):
-    """
-    Save the DataFrame to a CSV file and upload it to S3.
-    :param data: DataFrame to save.
-    :param bucket_name: S3 bucket name.
-    :param object_name: S3 object name. Include the file name to save as in the bucket.
-    """
+    s3_hook = S3Hook(aws_conn_id='aws_default')
+    
+    # Check if the file already exists in S3
+    if s3_hook.check_for_key(object_name, bucket_name=bucket_name):
+        # If exists, read the existing data into a DataFrame
+        old_data = s3_hook.read_key(object_name, bucket_name=bucket_name)
+        old_data_df = pd.read_csv(StringIO(old_data))
+        # Concatenate new data with the old data
+        all_data_df = pd.concat([old_data_df, data], ignore_index=True)
+    else:
+        all_data_df = data
+    
     # Convert DataFrame to CSV string
     csv_buffer = StringIO()
-    data.to_csv(csv_buffer, index=False)
-
-    # Create S3 client
-    s3_hook = S3Hook(aws_conn_id='aws_default')
-    s3_client = s3_hook.get_conn()
-
-    # Upload CSV to S3
-    s3_client.put_object(Bucket=bucket_name, Key=object_name, Body=csv_buffer.getvalue())
-    print(f"Data uploaded to s3://{bucket_name}/{object_name}")
+    all_data_df.to_csv(csv_buffer, index=False)
+    
+    # Upload the concatenated CSV to S3
+    s3_hook.load_string(csv_buffer.getvalue(), object_name, bucket_name=bucket_name, replace=True)
+    print(f"Data appended to s3://{bucket_name}/{object_name}")
 
 def main():
     api_key = '831739b7-722e-4af1-96db-8242aedc783f'
@@ -63,7 +65,7 @@ default_args = {
     'retry_delay': timedelta(minutes=1),
 }
 
-with DAG('my_dag', default_args=default_args, start_date=datetime(2021, 1, 1)) as dag:
+with DAG('my_dag', default_args=default_args, schedule_interval='*/15 * * * *', catchup=False) as dag:
     python_task = PythonOperator(
         task_id ='my_python_task',
         python_callable = main
