@@ -10,12 +10,13 @@ from io import StringIO
 from airflow.hooks.S3_hook import S3Hook
 
 def extract(api_key):
-    fields = "&_fields=flight_iata,dep_iata,dep_time_utc,arr_iata,arr_time_utc,status,duration,delayed,dep_delayed,arr_delayed"
+    fields = "&_fields=flight_iata,dep_iata,dep_time_utc,dep_estimated_utc,dep_actual_utc,arr_iata,arr_time_utc,arr_estimated_utc,arr_actual_utc,status,duration,delayed,dep_delayed,arr_delayed"
     method = 'ping'
     params = {'api_key': api_key}
     schedules_api = 'https://airlabs.co/api/v9/schedules?airline_iata=FR'
     print("Extracting...")
     schedule_data = pd.json_normalize(requests.get(schedules_api+fields+method, params).json(), record_path=['response'])
+    schedule_data['created_at'] = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
     return schedule_data 
 
 def save_to_s3(data, bucket_name, object_name):
