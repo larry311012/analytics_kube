@@ -24,12 +24,12 @@ def save_to_s3(data, bucket_name, object_name):
     # Check if the file already exists in S3
     # if s3_hook.check_for_key(object_name, bucket_name=bucket_name):
     #     # If exists, read the existing data into a DataFrame
-    old_data = s3_hook.read_key(object_name, bucket_name=bucket_name)
-    old_data_df = pd.read_csv(StringIO(old_data))
+    # old_data = s3_hook.read_key(object_name, bucket_name=bucket_name)
+    # old_data_df = pd.read_csv(StringIO(old_data))
         # Concatenate new data with the old data
-    all_data_df = pd.concat([old_data_df, data], ignore_index=True)
+    # all_data_df = pd.concat([old_data_df, data], ignore_index=True)
     # else:
-    #     all_data_df = data
+    all_data_df = data
     
     # Convert DataFrame to CSV string
     csv_buffer = StringIO()
