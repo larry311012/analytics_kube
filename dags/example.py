@@ -13,7 +13,7 @@ def extract(api_key):
     fields = "&_fields=flight_iata,dep_iata,dep_time_utc,dep_estimated_utc,dep_actual_utc,arr_iata,arr_time_utc,arr_estimated_utc,arr_actual_utc,status,duration,delayed,dep_delayed,arr_delayed"
     method = 'ping'
     params = {'api_key': api_key}
-    schedules_api = 'https://airlabs.co/api/v9/schedules?airline_iata=FR'
+    schedules_api = 'https://airlabs.co/api/v9/schedules?airline_iata=CA'
     print("Extracting...")
     schedule_data = pd.json_normalize(requests.get(schedules_api+fields+method, params).json(), record_path=['response'])
     schedule_data['created_at'] = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
