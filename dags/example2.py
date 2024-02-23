@@ -8,6 +8,7 @@ import sys
 import boto3
 from io import StringIO
 from airflow.hooks.S3_hook import S3Hook
+import clickhouse_driver
 from clickhouse_driver import Client
 
 def extract(api_key):
