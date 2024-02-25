@@ -68,6 +68,6 @@ default_args = {
 
 with DAG('my_dag', default_args=default_args, schedule_interval='*/15 * * * *', catchup=False) as dag:
     python_task = PythonOperator(
-        task_id ='fetch_from_api_to_s3',
+        task_id ='example',
         python_callable = main
     )
